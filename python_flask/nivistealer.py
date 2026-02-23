@@ -1,3 +1,4 @@
+from supabase import create_client
 from colorama import Fore, Back, Style
 from flask import Flask, render_template, url_for, request, jsonify,Response
 import time
