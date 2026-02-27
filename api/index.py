@@ -1,8 +1,5 @@
-﻿import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+﻿import os
+from dashboard import app
 
-from dashboard import app as application
-
-def handler(request):
-    return application(request.environ, application.start_response)
+def handler(environ, start_response):
+    return app(environ, start_response)

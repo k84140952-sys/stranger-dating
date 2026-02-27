@@ -1,8 +1,8 @@
-﻿import os
-from dotenv import load_dotenv
-from flask import Flask, request, jsonify, send_from_directory
+﻿from supabase import create_client
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from datetime import datetime
+import os
 import logging
 from werkzeug.utils import secure_filename
 
