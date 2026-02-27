@@ -1,7 +1,4 @@
-Flask==3.0.3
-Flask-CORS==5.0.0
-supabase==2.5.1
-realtime-client==0.5.2
-python-dotenv==1.0.1
-gunicorn==22.0.0
-Werkzeug==3.0.4
+supabase
+flask
+flask-cors
+werkzeug
