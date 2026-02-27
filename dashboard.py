@@ -1,5 +1,6 @@
 ﻿from supabase import create_client
 from flask import Flask, request, jsonify, Response
+from dotenv import load_dotenv  
 from flask_cors import CORS
 from datetime import datetime
 import os
